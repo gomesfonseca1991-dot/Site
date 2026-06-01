@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FGcloud 💈 — O Sistema que Toda Barbearia Precisa</title>
+<meta name="description" content="Gerencie agendamentos, caixa, equipa e muito mais. O sistema completo para barbearias modernas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9922A;--gold-l:#E8B84B;--gold-d:#A07020;
+  --bg:#080808;--s1:#0e0e0e;--s2:#141414;--s3:#1a1a1a;
+  --t1:#F4F0E8;--t2:#9A9080;--t3:#4A4540;
+  --bd:rgba(201,146,42,.12);--bd2:rgba(201,146,42,.22);
+  --font:'DM Sans',sans-serif;--disp:'Playfair Display',Georgia,serif;--mono:'DM Mono',monospace;
+  --r:14px;
+  --glow:0 0 80px rgba(201,146,42,.12);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ─── NOISE TEXTURE ─── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+
+/* ─── GOLDEN LINE TOP ─── */
+.top-line{height:2px;background:linear-gradient(90deg,transparent 0%,var(--gold-d) 20%,var(--gold-l) 50%,var(--gold-d) 80%,transparent 100%);position:relative;z-index:10}
+
+/* ─── NAV ─── */
+nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:.85rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:.65rem}
+.nav-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(201,146,42,.2),rgba(201,146,42,.05));border:1.5px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.nav-title{font-family:var(--disp);font-size:1.1rem;font-weight:700;color:var(--t1)}
+.nav-title span{color:var(--gold-l)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--t2);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .2s;letter-spacing:.02em}
+.nav-links a:hover{color:var(--gold-l)}
+.nav-cta{background:linear-gradient(135deg,var(--gold-l),var(--gold));color:#000;border:none;padding:.5rem 1.25rem;border-radius:8px;font-family:var(--font);font-weight:700;font-size:.82rem;cursor:pointer;text-decoration:none;letter-spacing:.02em;transition:opacity .15s,transform .1s}
+.nav-cta:hover{opacity:.88;transform:translateY(-1px)}
+
+/* ─── HERO ─── */
+.hero{position:relative;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.5rem 4rem;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none}
+.hero-orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(201,146,42,.12) 0%,transparent 70%);top:-100px;left:50%;transform:translateX(-50%)}
+.hero-orb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(201,146,42,.06) 0%,transparent 70%);bottom:0;right:-100px}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(201,146,42,.08);border:1px solid var(--bd2);border-radius:20px;padding:.38rem .9rem;font-size:.72rem;color:var(--gold-l);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2rem;animation:fadeUp .6s ease both}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold-l);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
+.hero h1{font-family:var(--disp);font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1.05;letter-spacing:-.02em;margin-bottom:1.5rem;animation:fadeUp .7s .1s ease both}
+.hero h1 em{font-style:italic;color:var(--gold-l)}
+.hero h1 .line2{display:block;color:var(--t2);font-weight:700;font-size:clamp(1.8rem,4vw,3.2rem)}
+.hero-desc{max-width:560px;font-size:1.1rem;color:var(--t2);line-height:1.75;margin-bottom:2.5rem;font-weight:300;animation:fadeUp .7s .2s ease both}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .7s .3s ease both}
+.btn-hero{display:inline-flex;align-items:center;gap:.5rem;padding:.78rem 1.75rem;border-radius:10px;font-family:var(--font);font-weight:700;font-size:.92rem;cursor:pointer;text-decoration:none;transition:all .15s;border:none;letter-spacing:.01em}
+.btn-primary{background:linear-gradient(135deg,var(--gold-l),var(--gold));color:#000;box-shadow:0 4px 30px rgba(201,146,42,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(201,146,42,.45)}
+.btn-ghost{background:transparent;color:var(--t1);border:1.5px solid rgba(255,255,255,.12)}
+.btn-ghost:hover{border-color:var(--bd2);color:var(--gold-l)}
+.hero-stats{display:flex;gap:3rem;margin-top:4rem;padding-top:3rem;border-top:1px solid var(--bd);animation:fadeUp .7s .4s ease both}
+.hero-stat-num{font-family:var(--disp);font-size:2.2rem;font-weight:800;color:var(--gold-l);line-height:1}
+.hero-stat-label{color:var(--t3);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem;font-weight:500}
+
+/* ─── MOCKUP PREVIEW ─── */
+.mockup-section{padding:5rem 1.5rem;position:relative;overflow:hidden}
+.mockup-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(201,146,42,.06) 0%,transparent 70%);pointer-events:none}
+.mockup-phone{max-width:320px;margin:0 auto;background:var(--s1);border:1.5px solid var(--bd2);border-radius:36px;padding:2rem 1.5rem;position:relative;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset}
+.mockup-phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:4px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);border-radius:0 0 4px 4px}
+.mockup-screen-row{display:flex;gap:.5rem;margin-bottom:.5rem}
+.mockup-card{background:var(--s3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:.7rem;flex:1}
+.mockup-card-label{color:var(--t3);font-size:.55rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;font-weight:600}
+.mockup-card-val{font-family:var(--disp);font-size:1rem;font-weight:700;color:var(--gold-l)}
+.mockup-list-item{background:var(--s3);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:.55rem .7rem;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem}
+.mockup-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mockup-name{font-size:.72rem;font-weight:600;flex:1}
+.mockup-time{font-size:.62rem;color:var(--gold-l);background:rgba(201,146,42,.1);border-radius:4px;padding:.1rem .3rem}
+.mockup-bar{height:4px;border-radius:2px;background:var(--s3);margin-top:.4rem;overflow:hidden}
+.mockup-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold-l))}
+
+/* ─── SECTIONS ─── */
+section{position:relative;z-index:1}
+.section-tag{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:var(--gold);font-weight:700;margin-bottom:.75rem;display:block}
+.section-title{font-family:var(--disp);font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1rem}
+.section-title em{font-style:italic;color:var(--gold-l)}
+.section-desc{color:var(--t2);font-size:1rem;line-height:1.8;max-width:540px;font-weight:300}
+.container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
+
+/* ─── FEATURES GRID ─── */
+.features{padding:6rem 1.5rem}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-top:3.5rem}
+.feat-card{background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:1.75rem;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,146,42,.04) 0%,transparent 60%);pointer-events:none}
+.feat-card:hover{border-color:var(--bd2);transform:translateY(-3px)}
+.feat-icon{width:48px;height:48px;border-radius:12px;background:rgba(201,146,42,.1);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.25rem;flex-shrink:0}
+.feat-title{font-family:var(--disp);font-size:1.15rem;font-weight:700;margin-bottom:.6rem;color:var(--t1)}
+.feat-desc{color:var(--t2);font-size:.875rem;line-height:1.75;font-weight:300}
+.feat-tag{display:inline-block;background:rgba(201,146,42,.08);color:var(--gold-l);font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700;padding:.22rem .6rem;border-radius:4px;margin-top:.85rem}
+
+/* ─── SPLIT SECTION ─── */
+.split{padding:6rem 1.5rem}
+.split-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.split-inner.reverse{direction:rtl}
+.split-inner.reverse>*{direction:ltr}
+.split-list{margin-top:2rem;display:flex;flex-direction:column;gap:.85rem}
+.split-item{display:flex;align-items:flex-start;gap:.85rem}
+.split-check{width:22px;height:22px;border-radius:50%;background:rgba(201,146,42,.1);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:.1rem;color:var(--gold-l)}
+.split-item-text strong{display:block;font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+.split-item-text span{color:var(--t2);font-size:.82rem;line-height:1.6}
+
+/* ─── SCREEN SHOWCASE ─── */
+.showcase{padding:2rem 1.5rem 6rem;background:linear-gradient(180deg,transparent 0%,rgba(201,146,42,.02) 50%,transparent 100%)}
+.screens-row{display:flex;gap:1rem;overflow-x:auto;padding:2.5rem 0;scrollbar-width:none;-webkit-overflow-scrolling:touch;justify-content:center;flex-wrap:wrap}
+.screens-row::-webkit-scrollbar{display:none}
+.screen-card{background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:1.25rem;min-width:200px;flex-shrink:0;transition:transform .2s,border-color .2s}
+.screen-card:hover{transform:translateY(-4px);border-color:var(--bd2)}
+.screen-icon{font-size:1.8rem;margin-bottom:.75rem}
+.screen-name{font-weight:700;font-size:.88rem;margin-bottom:.3rem}
+.screen-sub{color:var(--t3);font-size:.72rem;line-height:1.5}
+
+/* ─── PRICING / CTA BAND ─── */
+.cta-band{padding:6rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+.cta-band::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,146,42,.06) 0%,transparent 50%,rgba(201,146,42,.03) 100%);pointer-events:none}
+.cta-band-inner{max-width:680px;margin:0 auto;position:relative;z-index:1}
+.cta-band h2{font-family:var(--disp);font-size:clamp(2.2rem,4vw,3.5rem);font-weight:900;line-height:1.1;margin-bottom:1.25rem}
+.cta-band h2 em{font-style:italic;color:var(--gold-l)}
+.cta-band p{color:var(--t2);font-size:1.05rem;line-height:1.75;margin-bottom:2.5rem;font-weight:300}
+.cta-features{display:flex;justify-content:center;flex-wrap:wrap;gap:.65rem;margin-bottom:2.5rem}
+.cta-feat{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--t2);background:var(--s2);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:.32rem .75rem}
+.cta-feat::before{content:'✓';color:var(--gold-l);font-weight:700;font-size:.75rem}
+
+/* ─── TESTIMONIALS ─── */
+.testimonials{padding:6rem 1.5rem;background:var(--s1)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:3rem}
+.test-card{background:var(--bg);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:1.75rem;position:relative}
+.test-stars{color:var(--gold-l);font-size:.9rem;margin-bottom:1rem;letter-spacing:.05em}
+.test-text{color:var(--t2);font-size:.9rem;line-height:1.8;font-weight:300;margin-bottom:1.25rem;font-style:italic}
+.test-author{display:flex;align-items:center;gap:.75rem}
+.test-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0}
+.test-name{font-weight:600;font-size:.85rem}
+.test-role{color:var(--t3);font-size:.72rem}
+
+/* ─── COMPARISON ─── */
+.comparison{padding:6rem 1.5rem}
+.comp-table{max-width:700px;margin:3rem auto 0;background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden}
+.comp-header{display:grid;grid-template-columns:2fr 1fr 1fr;background:var(--s2);padding:.85rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.comp-header span{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--t3);text-align:center}
+.comp-header span:first-child{text-align:left}
+.comp-header .hl{color:var(--gold-l)}
+.comp-row{display:grid;grid-template-columns:2fr 1fr 1fr;padding:.85rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.03);align-items:center;transition:background .15s}
+.comp-row:hover{background:rgba(255,255,255,.015)}
+.comp-row:last-child{border-bottom:none}
+.comp-feat-name{font-size:.85rem;color:var(--t2)}
+.comp-cell{text-align:center;font-size:1rem}
+.comp-yes{color:var(--gold-l)}
+.comp-no{color:var(--t3);opacity:.4}
+
+/* ─── SECURITY BAND ─── */
+.security{padding:5rem 1.5rem;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2.5rem}
+.sec-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.6rem}
+.sec-icon{width:52px;height:52px;border-radius:14px;background:rgba(201,146,42,.07);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.sec-title{font-weight:700;font-size:.88rem}
+.sec-desc{color:var(--t3);font-size:.75rem;line-height:1.6}
+
+/* ─── FOOTER ─── */
+footer{padding:3rem 1.5rem;text-align:center;border-top:1px solid var(--bd)}
+.footer-logo{font-family:var(--disp);font-size:1.4rem;font-weight:800;color:var(--t1);margin-bottom:.5rem}
+.footer-logo span{color:var(--gold-l)}
+.footer-sub{color:var(--t3);font-size:.78rem;margin-bottom:1.5rem}
+.footer-copy{color:var(--t3);font-size:.72rem}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  nav{padding:.7rem 1rem}
+  .nav-links{display:none}
+  .hero h1{font-size:2.6rem}
+  .hero-stats{gap:1.5rem;flex-wrap:wrap;justify-content:center}
+  .split-inner{grid-template-columns:1fr;gap:3rem}
+  .split-inner.reverse{direction:ltr}
+  .mockup-phone{max-width:280px}
+  .features-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="top-line"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">💈</div>
+    <div class="nav-title">FG<span>cloud</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#funcionalidades">Funcionalidades</a></li>
+    <li><a href="#beneficios">Benefícios</a></li>
+    <li><a href="#comparacao">Comparação</a></li>
+    <li><a href="#depoimentos">Depoimentos</a></li>
+  </ul>
+  <a href="#comecar" class="nav-cta">Começar Agora →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-badge">✦ Sistema N.º 1 para Barbearias</div>
+  <h1>A barbearia que<br><em>fatura mais</em><span class="line2">usa FGcloud.</span></h1>
+  <p class="hero-desc">Agendamentos, caixa, equipa, fechamentos e booking online — tudo num só sistema. Simples, rápido e sempre disponível.</p>
+  <div class="hero-actions">
+    <a href="#comecar" class="btn-hero btn-primary">🚀 Experimente Grátis</a>
+    <a href="#funcionalidades" class="btn-hero btn-ghost">Ver funcionalidades ↓</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num">100%</div>
+      <div class="hero-stat-label">Online & Offline</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">PWA</div>
+      <div class="hero-stat-label">Instala como App</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">∞</div>
+      <div class="hero-stat-label">Agendamentos</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">0€</div>
+      <div class="hero-stat-label">Para começar</div>
+    </div>
+  </div>
+</section>
+
+<!-- MOCKUP PREVIEW -->
+<section class="mockup-section">
+  <div class="mockup-glow"></div>
+  <div class="mockup-phone">
+    <div class="mockup-screen-row">
+      <div class="mockup-card">
+        <div class="mockup-card-label">Hoje</div>
+        <div class="mockup-card-val">R$ 840</div>
+      </div>
+      <div class="mockup-card">
+        <div class="mockup-card-label">Agendados</div>
+        <div class="mockup-card-val">7</div>
+      </div>
+    </div>
+    <div style="margin-bottom:.6rem">
+      <div style="color:var(--t3);font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;font-weight:600">Próximos hoje</div>
+      <div class="mockup-list-item">
+        <div class="mockup-dot" style="background:#C9922A"></div>
+        <span class="mockup-name">João Silva</span>
+        <span class="mockup-time">14:00</span>
+      </div>
+      <div class="mockup-list-item">
+        <div class="mockup-dot" style="background:#C0392B"></div>
+        <span class="mockup-name">Pedro Alves</span>
+        <span class="mockup-time">14:30</span>
+      </div>
+      <div class="mockup-list-item">
+        <div class="mockup-dot" style="background:#1A7A4A"></div>
+        <span class="mockup-name">Bruno Costa</span>
+        <span class="mockup-time">15:00</span>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:.3rem">
+        <span style="color:var(--t3);font-size:.62rem">Rafael — Meta mensal</span>
+        <span style="color:var(--gold-l);font-size:.62rem;font-weight:700">78%</span>
+      </div>
+      <div class="mockup-bar"><div class="mockup-fill" style="width:78%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="funcionalidades">
+  <div class="container">
+    <span class="section-tag reveal">✦ Funcionalidades completas</span>
+    <h2 class="section-title reveal">Tudo o que a tua<br><em>barbearia precisa</em></h2>
+    <p class="section-desc reveal">Um sistema pensado por quem conhece o dia-a-dia de uma barbearia. Sem complicações, sem papéis.</p>
+    <div class="features-grid">
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">📅</div>
+        <div class="feat-title">Agenda Inteligente</div>
+        <div class="feat-desc">Vista em calendário ou lista. Cria, edita e cancela agendamentos em segundos. Autocomplete de clientes do histórico.</div>
+        <span class="feat-tag">⏰ Lembretes WhatsApp</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">💰</div>
+        <div class="feat-title">Caixa & Lançamentos</div>
+        <div class="feat-desc">Regista receitas de serviços e produtos com um toque. Controlo total dos pagamentos por método.</div>
+        <span class="feat-tag">📊 Relatórios automáticos</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">Fechamento de Colaboradores</div>
+        <div class="feat-desc">Calcula automaticamente a produção e comissão de cada barbeiro. Gera comprovante em PDF para imprimir.</div>
+        <span class="feat-tag">🖨 Comprovante PDF</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">🌐</div>
+        <div class="feat-title">Booking Online</div>
+        <div class="feat-desc">Os teus clientes agendam sozinhos, 24 horas por dia. Sem telefonemas, sem mensagens perdidas.</div>
+        <span class="feat-tag">📱 Link para partilhar</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">📦</div>
+        <div class="feat-title">Controlo de Estoque</div>
+        <div class="feat-desc">Produtos com alertas de stock mínimo. Vendas diretas com lançamento automático no caixa.</div>
+        <span class="feat-tag">⚠ Alertas automáticos</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">📈</div>
+        <div class="feat-title">Relatórios & Metas</div>
+        <div class="feat-desc">Gráficos de evolução mensal, produção por colaborador e exportação para Excel/CSV.</div>
+        <span class="feat-tag">🎯 Metas por barbeiro</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">💬</div>
+        <div class="feat-title">WhatsApp Integrado</div>
+        <div class="feat-desc">Envia lembretes automáticos com mensagem personalizada. Configura o tempo de antecedência.</div>
+        <span class="feat-tag">✅ Mensagem configurável</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">📉</div>
+        <div class="feat-title">Controlo de Despesas</div>
+        <div class="feat-desc">Regista e categoriza todas as despesas. Vê o lucro líquido real da tua barbearia.</div>
+        <span class="feat-tag">📊 Por categoria</span>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">👥</div>
+        <div class="feat-title">Gestão de Equipa</div>
+        <div class="feat-desc">Define percentagens de comissão, metas mensais e horários individuais para cada colaborador.</div>
+        <span class="feat-tag">🏆 Ranking de produção</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT — BENEFÍCIOS -->
+<section class="split" id="beneficios" style="background:var(--s1)">
+  <div class="container">
+    <div class="split-inner">
+      <div>
+        <span class="section-tag reveal">✦ Feito para crescer</span>
+        <h2 class="section-title reveal">Menos papel.<br><em>Mais lucro.</em></h2>
+        <p class="section-desc reveal">Para de perder tempo com folhas de papel, cadernos e cálculos manuais. O FGcloud faz tudo por ti.</p>
+        <div class="split-list">
+          <div class="split-item reveal">
+            <div class="split-check">✓</div>
+            <div class="split-item-text">
+              <strong>Nunca perde um agendamento</strong>
+              <span>Notificações push 15 minutos antes. O cliente recebe lembrete pelo WhatsApp automaticamente.</span>
+            </div>
+          </div>
+          <div class="split-item reveal">
+            <div class="split-check">✓</div>
+            <div class="split-item-text">
+              <strong>Comissões sem discussão</strong>
+              <span>O sistema calcula tudo automaticamente. Cada barbeiro vê a sua produção em tempo real.</span>
+            </div>
+          </div>
+          <div class="split-item reveal">
+            <div class="split-check">✓</div>
+            <div class="split-item-text">
+              <strong>Clientes que voltam sempre</strong>
+              <span>Histórico completo de cada cliente. Sabe os serviços preferidos e o total gasto.</span>
+            </div>
+          </div>
+          <div class="split-item reveal">
+            <div class="split-check">✓</div>
+            <div class="split-item-text">
+              <strong>Funciona sem internet</strong>
+              <span>Modo offline com sincronização automática quando a ligação voltar. Nunca paras de trabalhar.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center">
+        <div style="background:var(--bg);border:1px solid var(--bd2);border-radius:20px;padding:2rem;max-width:300px;width:100%">
+          <div style="font-family:var(--disp);font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:1.25rem">Resumo do mês</div>
+          <div style="margin-bottom:1.25rem">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.3rem">
+              <span style="color:var(--t2);font-size:.8rem">Faturamento</span>
+              <span style="color:var(--gold-l);font-weight:700;font-family:var(--disp)">R$ 12.480</span>
+            </div>
+            <div style="height:6px;border-radius:3px;background:var(--s3);overflow:hidden"><div style="height:100%;width:85%;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));border-radius:3px"></div></div>
+          </div>
+          <div style="margin-bottom:1.25rem">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.3rem">
+              <span style="color:var(--t2);font-size:.8rem">Comissões pagas</span>
+              <span style="color:#E74C3C;font-weight:700;font-family:var(--disp)">R$ 5.616</span>
+            </div>
+            <div style="height:6px;border-radius:3px;background:var(--s3);overflow:hidden"><div style="height:100%;width:45%;background:#E74C3C;border-radius:3px"></div></div>
+          </div>
+          <div style="background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.2);border-radius:10px;padding:.85rem;text-align:center">
+            <div style="color:var(--t3);font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem">Lucro Líquido</div>
+            <div style="font-family:var(--disp);font-size:1.8rem;font-weight:800;color:#27AE60">R$ 6.864</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT 2 — BOOKING ONLINE -->
+<section class="split">
+  <div class="container">
+    <div class="split-inner reverse">
+      <div>
+        <span class="section-tag reveal">✦ Booking Online</span>
+        <h2 class="section-title reveal">Os clientes<br>agendam<em> sozinhos.</em></h2>
+        <p class="section-desc reveal">Partilha o link do teu booking e os clientes escolhem o serviço, o barbeiro e o horário — sem precisares de atender.</p>
+        <div class="split-list">
+          <div class="split-item reveal">
+            <div class="split-check">✓</div>
+            <div class="split-item-text">
+              <strong>Disponível 24/7</strong>
+              <span>Clientes agendam de madrugada, ao fim de semana — sempre que quiserem.</span>
+            </div>
+          </div>
+          <div class="split-item reveal">
+            <div class="split-check">✓</div>
+            <div class="split-item-text">
+              <strong>Horários automáticos</strong>
+              <span>O sistema mostra apenas os slots livres. Sem conflitos, sem erros.</span>
+            </div>
+          </div>
+          <div class="split-item reveal">
+            <div class="split-check">✓</div>
+            <div class="split-item-text">
+              <strong>Personalizado por barbeiro</strong>
+              <span>Cada colaborador tem os seus próprios dias e horários de trabalho.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center">
+        <div style="background:var(--s1);border:1.5px solid var(--bd2);border-radius:24px;padding:1.5rem;max-width:260px;width:100%;text-align:center">
+          <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:1rem">Barber Shop Online</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem">
+            <div style="background:var(--s3);border:1.5px solid var(--bd2);border-radius:8px;padding:.65rem;font-size:.72rem;font-weight:600;cursor:pointer">✂ Corte</div>
+            <div style="background:rgba(201,146,42,.1);border:1.5px solid var(--gold);border-radius:8px;padding:.65rem;font-size:.72rem;font-weight:600;color:var(--gold-l)">✓ Barba</div>
+            <div style="background:var(--s3);border:1.5px solid var(--bd);border-radius:8px;padding:.65rem;font-size:.72rem;font-weight:600">💆 Hidrat.</div>
+            <div style="background:var(--s3);border:1.5px solid var(--bd);border-radius:8px;padding:.65rem;font-size:.72rem;font-weight:600">🎨 Color.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin-bottom:.75rem">
+            <div style="background:var(--s3);border-radius:6px;padding:.35rem;font-size:.6rem;text-align:center;color:var(--t3)">09:00</div>
+            <div style="background:var(--s3);border-radius:6px;padding:.35rem;font-size:.6rem;text-align:center;color:var(--t3)">09:30</div>
+            <div style="background:linear-gradient(135deg,var(--gold-l),var(--gold));border-radius:6px;padding:.35rem;font-size:.6rem;text-align:center;color:#000;font-weight:700">10:00</div>
+            <div style="background:rgba(255,255,255,.03);border-radius:6px;padding:.35rem;font-size:.6rem;text-align:center;color:var(--t3);text-decoration:line-through">10:30</div>
+          </div>
+          <div style="background:linear-gradient(135deg,var(--gold-l),var(--gold));border-radius:8px;padding:.6rem;font-size:.78rem;font-weight:700;color:#000">Confirmar Marcação ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TELAS -->
+<section class="showcase" id="telas">
+  <div class="container" style="text-align:center">
+    <span class="section-tag reveal">✦ Todas as páginas</span>
+    <h2 class="section-title reveal">Um sistema<br><em>completo</em></h2>
+  </div>
+  <div class="screens-row">
+    <div class="screen-card reveal"><div class="screen-icon">📊</div><div class="screen-name">Painel</div><div class="screen-sub">Visão geral em tempo real</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">📅</div><div class="screen-name">Agenda</div><div class="screen-sub">Calendário e lista diária</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">💰</div><div class="screen-name">Caixa</div><div class="screen-sub">Lançamentos e fechamento</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">👥</div><div class="screen-name">Equipa</div><div class="screen-sub">Colaboradores e comissões</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">📦</div><div class="screen-name">Produtos</div><div class="screen-sub">Estoque e vendas</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">📉</div><div class="screen-name">Despesas</div><div class="screen-sub">Controlo de gastos</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">📈</div><div class="screen-name">Relatórios</div><div class="screen-sub">Análise por período</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">🌐</div><div class="screen-name">Online</div><div class="screen-sub">Booking para clientes</div></div>
+    <div class="screen-card reveal"><div class="screen-icon">💾</div><div class="screen-name">Backup</div><div class="screen-sub">Dados sempre seguros</div></div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="comparison" id="comparacao" style="background:var(--s1)">
+  <div class="container" style="text-align:center">
+    <span class="section-tag reveal">✦ Porquê o FGcloud?</span>
+    <h2 class="section-title reveal">Compara e<br><em>decide tu.</em></h2>
+    <div class="comp-table reveal">
+      <div class="comp-header">
+        <span>Funcionalidade</span>
+        <span class="hl">FGcloud 💈</span>
+        <span>Outros sistemas</span>
+      </div>
+      <div class="comp-row"><span class="comp-feat-name">Agendamento online para clientes</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-yes">✓</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Funciona sem internet (offline)</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Fechamento automático com PDF</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+      <div class="comp-row"><span class="comp-feat-name">WhatsApp integrado</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Metas por colaborador</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Controlo de estoque</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Backup em JSON completo</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Instala como app (PWA)</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Relatórios exportáveis</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-yes">✓</span></div>
+      <div class="comp-row"><span class="comp-feat-name">Notificações push</span><span class="comp-cell comp-yes">✓</span><span class="comp-cell comp-no">✗</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="depoimentos">
+  <div class="container" style="text-align:center">
+    <span class="section-tag reveal">✦ Quem já usa</span>
+    <h2 class="section-title reveal">Barbearias que<br><em>confiam no sistema</em></h2>
+  </div>
+  <div class="container">
+    <div class="test-grid">
+      <div class="test-card reveal">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"Antes eu controlava tudo num caderno. Agora o sistema faz os cálculos das comissões sozinho e os meus barbeiros adoram ver a produção deles em tempo real."</p>
+        <div class="test-author">
+          <div class="test-avatar" style="background:rgba(201,146,42,.15);color:var(--gold-l)">RS</div>
+          <div><div class="test-name">Rafael S.</div><div class="test-role">Barbearia Clássica — SP</div></div>
+        </div>
+      </div>
+      <div class="test-card reveal">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"O booking online foi um divisor de águas. Os clientes agendam enquanto durmo e de manhã já tenho a agenda cheia. Nunca mais perdi um cliente por não responder."</p>
+        <div class="test-author">
+          <div class="test-avatar" style="background:rgba(26,122,74,.15);color:#27AE60">LM</div>
+          <div><div class="test-name">Lucas M.</div><div class="test-role">BarberHouse — RJ</div></div>
+        </div>
+      </div>
+      <div class="test-card reveal">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"Finalmente sei quanto lucro a barbearia dá de verdade. O relatório mensal com despesas, comissões e lucro líquido é perfeito. Parece que tenho um contador na mão."</p>
+        <div class="test-author">
+          <div class="test-avatar" style="background:rgba(91,164,230,.12);color:#5BA4E6">TC</div>
+          <div><div class="test-name">Thiago C.</div><div class="test-role">Studio TC — MG</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section class="security">
+  <div class="container" style="text-align:center">
+    <span class="section-tag reveal">✦ Segurança & Confiança</span>
+    <h2 class="section-title reveal">Os teus dados<br><em>sempre protegidos</em></h2>
+    <div class="security-grid">
+      <div class="sec-item reveal">
+        <div class="sec-icon">🔐</div>
+        <div class="sec-title">Firebase Firestore</div>
+        <div class="sec-desc">Base de dados Google com encriptação ponta-a-ponta</div>
+      </div>
+      <div class="sec-item reveal">
+        <div class="sec-icon">💾</div>
+        <div class="sec-title">Backup Completo</div>
+        <div class="sec-desc">Exporta todos os dados em JSON quando quiseres</div>
+      </div>
+      <div class="sec-item reveal">
+        <div class="sec-icon">🌐</div>
+        <div class="sec-title">CDN Global</div>
+        <div class="sec-desc">Hospedagem Firebase com 99.9% de disponibilidade</div>
+      </div>
+      <div class="sec-item reveal">
+        <div class="sec-icon">📵</div>
+        <div class="sec-title">Modo Offline</div>
+        <div class="sec-desc">Funciona sem internet, sincroniza quando voltar</div>
+      </div>
+      <div class="sec-item reveal">
+        <div class="sec-icon">👑</div>
+        <div class="sec-title">Roles de Acesso</div>
+        <div class="sec-desc">Admin e Operador — cada um vê só o que precisa</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-band" id="comecar">
+  <div class="cta-band-inner">
+    <span class="section-tag" style="display:block;text-align:center;margin-bottom:1rem">✦ Começa hoje</span>
+    <h2>A tua barbearia<br><em>merece o melhor.</em></h2>
+    <p>Instala o FGcloud, configura em minutos e começa a controlar a tua barbearia como um profissional. Grátis para começar.</p>
+    <div class="cta-features">
+      <span class="cta-feat">Agendamento Online</span>
+      <span class="cta-feat">WhatsApp automático</span>
+      <span class="cta-feat">Funciona offline</span>
+      <span class="cta-feat">Instala como app</span>
+      <span class="cta-feat">Backup completo</span>
+      <span class="cta-feat">Comissões automáticas</span>
+    </div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="#" class="btn-hero btn-primary" style="font-size:1rem;padding:.9rem 2.25rem">🚀 Começar Agora — É Grátis</a>
+    </div>
+    <p style="color:var(--t3);font-size:.75rem;margin-top:1.25rem">Sem cartão de crédito · Sem contratos · Cancela quando quiseres</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">FG<span>cloud</span> 💈</div>
+  <div class="footer-sub">O sistema completo para barbearias modernas</div>
+  <div class="footer-copy">© 2025 FGcloud · Feito com dedicação para quem vive da barbearia</div>
+</footer>
+
+<script>
+const reveals=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}
+  });
+},{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+reveals.forEach(el=>obs.observe(el));
+
+// Stagger cards
+document.querySelectorAll('.features-grid .feat-card, .test-grid .test-card, .screens-row .screen-card').forEach((el,i)=>{
+  el.style.transitionDelay=(i*0.07)+'s';
+});
+</script>
+</body>
+</html>
